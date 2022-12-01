@@ -1,6 +1,6 @@
 {
   "models": {
-    "alwaysai/mask_rcnn": 1
+    "alwaysai/mask_rcnn": 2
   },
   "scripts": {
     "start": "python app.py"
