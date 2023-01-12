@@ -4,7 +4,11 @@ import time
 
 def main():
     instance_segmentation = edgeiq.InstanceSegmentation("alwaysai/mask_rcnn")
-    instance_segmentation.load(engine=edgeiq.Engine.DNN)
+    if edgeiq.is_opencv_cuda_available():
+        engine = edgeiq.Engine.DNN_CUDA
+    else:
+        engine = edgeiq.Engine.DNN
+    instance_segmentation.load(engine)
 
     print("Engine: {}".format(instance_segmentation.engine))
     print("Accelerator: {}\n".format(instance_segmentation.accelerator))
@@ -20,7 +24,11 @@ def main():
             fps.start()
 
             while True:
-                frame = video_stream.read()
+                try:
+                    frame = video_stream.read()
+                except edgeiq.NoMoreFrames:
+                    video_stream.start()
+                    frame = video_stream.read()
 
                 results = instance_segmentation.segment_image(frame)
 
